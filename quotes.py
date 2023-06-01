@@ -1,33 +1,37 @@
-import streamlit as st
+
 import requests
 from bs4 import BeautifulSoup
+import streamlit as st
 
-# Define the base URL
-BASE_URL = "https://quotes.toscrape.com/"
-
-# Function to scrape the website
 def scrape_quotes():
-    # Send a GET request to the website
-    response = requests.get(BASE_URL)
-
-    # Parse the HTML content using BeautifulSoup
-    soup = BeautifulSoup(response.content, "html.parser")
-
-    # Find all quote elements on the page
-    quote_elements = soup.find_all("div", class_="quote")
-
-    # Extract the data from each quote element
-    quotes_data = []
-    for quote_element in quote_elements:
-        text = quote_element.find("span", class_="text").get_text()
-        author = quote_element.find("small", class_="author").get_text()
-        tags = [tag.get_text() for tag in quote_element.find_all("a", class_="tag")]
-     
-
-        quotes_data.append({
-            "text": text,
-            "author": author,
-            "tags": tags,
+    url = "https://quotes.toscrape.com/"
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+    quotes = soup.find_all('div', class_='quote')
+    data = []
+    for quote in quotes:
+        text = quote.find('span', class_='text').text
+        author = quote.find('small', class_='author').text
+        tags = [tag.text for tag in quote.find_all('a', class_='tag')]
+        data.append({
+            'author': author,
+            'text': text,
+            'tags': tags
         })
+    return data
 
-    return quotes_data
+def main():
+    st.title("Quote Scraper")
+    st.subheader("Scraping data from 'https://quotes.toscrape.com/'")
+    st.write("Click the button below to scrape quotes:")
+    if st.button("Scrape Quotes"):
+        quotes = scrape_quotes()
+        st.subheader("Scraped Quotes:")
+        for quote in quotes:
+            st.write(f"Author: {quote['author']}")
+            st.write(f"Quote: {quote['text']}")
+            st.write(f"Tags: {', '.join(quote['tags'])}")
+            st.write("----")
+
+if __name__ == '__main__':
+    main()
