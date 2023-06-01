@@ -15,7 +15,7 @@ content = BeautifulSoup(res.content, 'html.parser')
 
 quotes = content.find_all('div', class_='quote')
 
-quote_file = []  # Create an empty list to store quotes
+quote_file = []
 
 for quote in quotes:
     text = quote.find('span', class_='text').text
