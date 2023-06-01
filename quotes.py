@@ -8,29 +8,41 @@ def scrape_quotes():
     soup = BeautifulSoup(response.content, 'html.parser')
     quotes = soup.find_all('div', class_='quote')[:10]  # Limit to the first 10 quotes
     data = []
+    tags = set()  # Create a set to store unique tags
     for quote in quotes:
         text = quote.find('span', class_='text').text
         author = quote.find('small', class_='author').text
-        tags = [tag.text for tag in quote.find_all('a', class_='tag')]
+        quote_tags = [tag.text for tag in quote.find_all('a', class_='tag')]
+        tags.update(quote_tags)  # Add tags to the set
         data.append({
             'author': author,
             'text': text,
-            'tags': tags
+            'tags': quote_tags
         })
-    return data
+    top_tags = []
+    desired_tags = ["love", "inspirational", "life", "reading"]
+    for tag in tags:
+        if tag.lower() in desired_tags:
+            top_tags.append(tag)
+            if len(top_tags) == 10:
+                break
+    return data, top_tags
 
 def main():
     st.title("Quote Scraper")
     st.subheader("Scraping data from 'https://quotes.toscrape.com/'")
-    st.write("Click the button below to scrape quotes:")
-    if st.button("Scrape Quotes"):
-        quotes = scrape_quotes()
+    st.write("Click the button below to scrape quotes and tags:")
+    if st.button("Scrape Quotes and Tags"):
+        quotes, tags = scrape_quotes()
         st.subheader("Scraped Quotes:")
         for quote in quotes:
             st.write(f"Author: {quote['author']}")
             st.write(f"Quote: {quote['text']}")
             st.write(f"Tags: {', '.join(quote['tags'])}")
             st.write("----")
+        st.subheader("Top Tags:")
+        for tag in tags:
+            st.write(tag)
 
 if __name__ == '__main__':
     main()
