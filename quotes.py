@@ -19,13 +19,7 @@ def scrape_quotes():
             'text': text,
             'tags': quote_tags
         })
-    top_tags = []
-    desired_tags = ["love", "inspirational", "life", "reading"]
-    for tag in tags:
-        if tag.lower() in desired_tags:
-            top_tags.append(tag)
-            if len(top_tags) == 10:
-                break
+    top_tags = [tag for tag in tags if tag in ['love', 'inspirational', 'life', 'reading', 'books', 'simile', 'truth', 'friendship']][:10]
     return data, top_tags
 
 def main():
