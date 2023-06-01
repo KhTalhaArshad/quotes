@@ -20,6 +20,7 @@ quote_file = []  # Create an empty list to store quotes
 for quote in quotes:
     text = quote.find('span', class_='text').text
     author = quote.find('small', class_='author').text
+    scraped_data.append({'Tags' : tags, 'Tages' : text })
     link = quote.find('a')
     st.success(text)
     st.markdown(f"<a href='https://quotes.toscrape.com{link['href']}'>{author}</a>", unsafe_allow_html=True)
