@@ -1,4 +1,3 @@
-
 import requests
 from bs4 import BeautifulSoup
 import streamlit as st
@@ -7,7 +6,7 @@ def scrape_quotes():
     url = "https://quotes.toscrape.com/"
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
-    quotes = soup.find_all('div', class_='quote')
+    quotes = soup.find_all('div', class_='quote')[:10]  # Limit to the first 10 quotes
     data = []
     for quote in quotes:
         text = quote.find('span', class_='text').text
