@@ -20,7 +20,7 @@ quote_file = []  # Create an empty list to store quotes
 for quote in quotes:
     text = quote.find('span', class_='text').text
     author = quote.find('small', class_='author').text
-    scrapped_data.append({'Author': author, 'Quote': text })
+    scrapped_data.append({'Author': author, 'Quote': text})
     scraped_data.append({'Tags':tags, 'Tags': text})
     link = quote.find('a')
     st.success(text)
