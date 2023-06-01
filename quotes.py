@@ -1,36 +1,33 @@
 import streamlit as st
-import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 
-tag = st.selectbox('Choose a topic', ['love', 'humor', 'life', 'books'])
+# Define the base URL
+BASE_URL = "https://quotes.toscrape.com/"
 
-generate = st.button('Generate CSV')
+# Function to scrape the website
+def scrape_quotes():
+    # Send a GET request to the website
+    response = requests.get(BASE_URL)
 
-url = f"https://quotes.toscrape.com/tag/{tag}/"
+    # Parse the HTML content using BeautifulSoup
+    soup = BeautifulSoup(response.content, "html.parser")
 
-res = requests.get(url)
+    # Find all quote elements on the page
+    quote_elements = soup.find_all("div", class_="quote")
 
-content = BeautifulSoup(res.content, 'html.parser')
+    # Extract the data from each quote element
+    quotes_data = []
+    for quote_element in quote_elements:
+        text = quote_element.find("span", class_="text").get_text()
+        author = quote_element.find("small", class_="author").get_text()
+        tags = [tag.get_text() for tag in quote_element.find_all("a", class_="tag")]
+     
 
-quotes = content.find_all('div', class_='quote')
+        quotes_data.append({
+            "text": text,
+            "author": author,
+            "tags": tags,
+        })
 
-quote_file = []  # Create an empty list to store quotes
-
-for quote in quotes:
-    text = quote.find('span', class_='text').text
-    author = quote.find('small', class_='author').text
-    scrapped_data.append({'Author': author, 'Quote': text})
-    scraped_data.append({'Tags':tags, 'Tags': text})
-    link = quote.find('a')
-    st.success(text)
-    st.markdown(f"<a href='https://quotes.toscrape.com{link['href']}'>{author}</a>", unsafe_allow_html=True)
-    quote_file.append([text, author, link['href']])
-
-if generate:
-    try:
-        df = pd.DataFrame(quote_file, columns=['Quote', 'Author', 'Link'])
-        df.to_csv('quotes.csv', index=False, encoding='utf-8-sig')
-        st.write("CSV file generated successfully!")
-    except:
-        st.write('Error generating CSV file.')
+    return quotes_data
